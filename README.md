@@ -64,6 +64,7 @@ server.on('request', function (req, res) {
     handler(req, res, 404); // Status code will be 404
   }
 });
+```
 
 Example as middleware
 ---------------------
