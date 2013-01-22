@@ -1,0 +1,28 @@
+{
+  "name": "dish",
+  "version": "0.0.0",
+  "description": "miniature in-memory http cache optimized for serving buffers or strings",
+  "main": "index.js",
+  "dependencies": {
+    "mime": "~1.2.9"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "superagent": "~0.12.1"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/carlos8f/node-dish.git"
+  },
+  "homepage": "https://github.com/carlos8f/node-dish",
+  "keywords": [
+    "middleware",
+    "performance",
+    "asset"
+  ],
+  "author": "Carlos Rodriguez <carlos@s8f.org> (http://s8f.org/)",
+  "license": "MIT"
+}
