@@ -5,6 +5,88 @@ miniature in-memory http static middleware optimized for serving buffers or stri
 
 [![build status](https://secure.travis-ci.org/carlos8f/node-dish.png)](http://travis-ci.org/carlos8f/node-dish)
 
+Given a file path, string or buffer, **dish** will create you an HTTP server request
+listener, with added benefits:
+
+- gzip support
+- ETag / Conditional GET support
+- In-memory cache (faster than accessing the disk for every request)
+- HTTP keep-alive timeout
+
+Install
+-------
+
+```
+$ npm install --save dish
+```
+
+Basic usage
+-----------
+
+To serve a raw string or buffer:
+
+```js
+var dish = require('dish')
+  , server = require('http').createServer()
+
+server.on('request', dish('hello world!')); // can also accept a Buffer instance
+server.listen(3000);
+```
+
+To serve a file (mime-type autodetected from file name)
+
+```js
+server.on('request', dish.file('./facepalm.jpg'));
+```
+
+Options
+-------
+
+You can pass options as the second parameter to `dish()`.
+
+- `headers` (Object) - override / specify headers to send. Be sure to set a `Content-Type`
+  header if you are serving a string or buffer.
+- `keepAlive` (Number) - HTTP keep-alive timeout in milliseconds. Use this to
+  cut down on excess persistent connections to your server.
+- `maxAge` (Number) - Proxy cache lifetime in seconds. Use this if you are using
+  a reverse proxy such as Varnish.
+- `gzip` (Boolean) - Set to `false` to disable gzip in responses.
+
+### Status code
+
+You can control the status code of the response by passing a Number as the third
+argument of the request handler:
+
+```js
+var handler = dish('page not found');
+server.on('request', function (req, res) {
+  if (req.url === '/nonsense') {
+    handler(req, res, 404); // Status code will be 404
+  }
+});
+
+Example as middleware
+---------------------
+
+```js
+var dish = require('dish')
+  , middler = require('middler')
+  , server = require('http').createServer()
+
+middler(server)
+  // a simple "about us" page
+  .get('/about', dish.file('./about.html'))
+  // Serve a dynamic javascript file with gzip support:
+  .get('/my-code.js', function (req, res, next) {
+    // create some dynamic javascript...
+    var myCode = 'var myNumber = ' + Math.random();
+    // serve it
+    dish(myCode, {headers: {'Content-Type': 'text/javascript'}})(req, res);
+  });
+
+server.listen(3000);
+```
+
 - - -
 
 ### Developed by [Terra Eclipse](http://www.terraeclipse.com)
