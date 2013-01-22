@@ -83,7 +83,15 @@ describe('basic test', function () {
         assert(res.headers['last-modified']);
         // content-type should be text/plain
         assert.equal(res.headers['content-type'], 'image/png');
-        done();
+        // proper content
+        var data = '';
+        res.on('data', function (chunk) {
+          data += chunk;
+        });
+        res.once('end', function () {
+          assert.equal(fs.readFileSync(path.join(__dirname, 'fixtures', 'pirate_flag.png')).toString(), data);
+          done();
+        });
       });
   });
 
