@@ -35,6 +35,7 @@ describe('basic test', function () {
     server.once('request', dish('<partytime>carlos</partytime>', {headers: {'Content-Type': 'text/html'}}));
     request.get(baseUrl + '/', function (res) {
       assert.equal(res.statusCode, 200);
+      console.log(res.headers);
       console.log(JSON.stringify(res.text));
       //assert.equal(res.headers['content-length'], 29);
       // etag should be sha1
