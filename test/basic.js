@@ -108,6 +108,38 @@ describe('basic test', function () {
       });
   });
 
+  it('serve buffer', function (done) {
+    server.once('request', dish(fs.readFileSync(path.join(__dirname, 'fixtures', 'pirate_flag.png')), {headers: {'Content-Type': 'image/png'}}));
+    request
+      .get(baseUrl + '/')
+      .set('Accept-Encoding', 'gzip, deflate')
+      .end(function (res) {
+        assert.equal(res.statusCode, 200);
+        assert.equal(res.headers['content-length'], 15673);
+        // etag should be sha1
+        if (fs.exists) {
+          assert.equal(res.headers['etag'], 'ac82f5998d5a621eda3feb8837b2bdd0421be590');
+        }
+        else {
+          // node 0.6 is weird.
+          assert.equal(res.headers['etag'], '5633b5aa1a8485e58c4ad0cf6ffbac6ae8ec81ef');
+        }
+        // last-modified should be set
+        assert(res.headers['last-modified']);
+        // content-type should be text/plain
+        assert.equal(res.headers['content-type'], 'image/png');
+        // proper content
+        var data = '';
+        res.on('data', function (chunk) {
+          data += chunk;
+        });
+        res.once('end', function () {
+          assert.equal(fs.readFileSync(path.join(__dirname, 'fixtures', 'pirate_flag.png')).toString(), data);
+          done();
+        });
+      });
+  });
+
   var lastModified, eTag;
 
   it('serve gzipped', function (done) {
