@@ -4,7 +4,9 @@ var Dish = require('./lib/dish')
 // create a dish from string or buffer
 module.exports = function (data, headers, options) {
   var dish = new Dish(data, headers, options);
-  return dish.serve.bind(dish);
+  return function (req, res, status) {
+    dish.serve(req, res, status);
+  };
 };
 
 // create a dish from a file path
