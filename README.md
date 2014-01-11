@@ -46,8 +46,10 @@ You can pass options as the second parameter to `dish()`.
 
 - `headers` (Object) - override / specify headers to send. Be sure to set a `Content-Type`
   header if you are serving a string or buffer.
-- `keepAlive` (Number) - HTTP keep-alive timeout in milliseconds. Use this to
-  cut down on excess persistent connections to your server.
+- <del>keepAlive</del>: **This option is removed as of `v0.1.6`**. The intention was to
+  clean up idle connections, but the implementation was shown to
+  [abort active requests](https://github.com/carlos8f/node-buffet/issues/14).
+  Please do not use this option!
 - `maxAge` (Number) - Proxy cache lifetime in seconds. Use this if you are using
   a reverse proxy such as Varnish.
 - `gzip` (Boolean) - Set to `false` to disable gzip in responses.
