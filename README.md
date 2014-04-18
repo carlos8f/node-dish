@@ -11,7 +11,6 @@ listener, with added benefits:
 - gzip support
 - ETag / Conditional GET support
 - In-memory cache (faster than accessing the disk for every request)
-- HTTP keep-alive timeout
 
 Install
 -------
