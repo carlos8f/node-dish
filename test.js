@@ -3,7 +3,7 @@ util = require('util');
 http = require('http');
 path = require('path');
 fs = require('fs');
-dish = require('../');
+dish = require('./');
 
 listen = function (fn) {
   var server = http.createServer();
@@ -71,7 +71,7 @@ describe('basic test', function () {
   });
 
   it('serve a text file', function (done) {
-    server.once('request', dish.file(path.join(__dirname, 'fixtures', 'hello.txt')));
+    server.once('request', dish.file('hello.txt'));
     request
       .get(baseUrl + '/')
       .set('If-Modified-Since', 'Fri, 18 Jan 2013 20:50:19 GMT')
@@ -93,7 +93,7 @@ describe('basic test', function () {
   });
 
   it('serve an image', function (done) {
-    server.once('request', dish.file(path.join(__dirname, 'fixtures', 'pirate_flag.png')));
+    server.once('request', dish.file('pirate_flag.png'));
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'gzip, deflate')
@@ -112,14 +112,14 @@ describe('basic test', function () {
           data += chunk;
         });
         res.once('end', function () {
-          assert.equal(fs.readFileSync(path.join(__dirname, 'fixtures', 'pirate_flag.png')).toString(), data);
+          assert.equal(fs.readFileSync('pirate_flag.png').toString(), data);
           done();
         });
       });
   });
 
   it('serve buffer', function (done) {
-    server.once('request', dish(fs.readFileSync(path.join(__dirname, 'fixtures', 'pirate_flag.png')), {headers: {'Content-Type': 'image/png'}}));
+    server.once('request', dish(fs.readFileSync('pirate_flag.png'), {headers: {'Content-Type': 'image/png'}}));
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'gzip, deflate')
@@ -138,7 +138,7 @@ describe('basic test', function () {
           data += chunk;
         });
         res.once('end', function () {
-          assert.equal(fs.readFileSync(path.join(__dirname, 'fixtures', 'pirate_flag.png')).toString(), data);
+          assert.equal(fs.readFileSync('pirate_flag.png').toString(), data);
           done();
         });
       });
@@ -147,7 +147,7 @@ describe('basic test', function () {
   var lastModified, eTag;
 
   it('serve gzipped', function (done) {
-    server.on('request', dish.file(path.join(__dirname, 'fixtures', 'hello.txt')));
+    server.on('request', dish.file('hello.txt'));
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'gzip, deflate')
