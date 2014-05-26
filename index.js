@@ -4,6 +4,7 @@ var crypto = require('crypto')
   , from = require('from')
   , LRU = require('lru-cache')
   , mime = require('mime')
+  , minimatch = require('minimatch')
 
 function copy (orig) {
   var n = {};
@@ -63,6 +64,13 @@ function dish (p, options) {
 
   // middleware handler
   var mw = function (req, res, next) {
+    var statusCode = 200;
+    if (options.status) statusCode = options.status;
+    if (res.statusCode) statusCode = res.statusCode;
+    if (typeof next === 'number') {
+      statusCode = next;
+      next = null;
+    }
     if (!next) next = function (e) { res.emit('error', e) };
     // try fetching from the LRU cache
     var file = cache.backend.get(p);
@@ -114,7 +122,7 @@ function dish (p, options) {
         stream = from(file.chunks);
       }
       // write the response
-      res.writeHead(res.statusCode || options.status || 200, resHeaders);
+      res.writeHead(statusCode, resHeaders);
       if (stream === null) res.end();
       else stream.pipe(res);
     }
@@ -196,6 +204,19 @@ dish.file = function (p, options) {
   var opts = copy(options);
   opts.file = true;
   return dish(p, opts);
+};
+
+dish.clearCache = function (p) {
+  if (p) {
+    // delete items in subdirectories
+    cache.backend.keys().forEach(function (k) {
+      if (minimatch(k, '{' + p + ',' + p.replace(/\/$/, '') + '/**/*}')) {
+        cache.backend.del(k);
+      }
+    });
+    cache.backend.del(p);
+  }
+  else cache.backend.reset();
 };
 
 // exports

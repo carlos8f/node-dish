@@ -6,7 +6,8 @@
   "dependencies": {
     "from": "^0.1.3",
     "lru-cache": "^2.5.0",
-    "mime": "~1.2.9"
+    "mime": "~1.2.9",
+    "minimatch": "^0.3.0"
   },
   "devDependencies": {
     "mocha": "*",
