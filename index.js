@@ -85,9 +85,8 @@ function dish (p, options) {
         d = Date.parse(req.headers['if-modified-since']);
       }
       catch (e) {}
-
-      if (d) console.log(d, file.lastModified.getTime(), d >= file.lastModified.getTime(), resHeaders);
-      if ((req.headers['if-none-match'] && req.headers['if-none-match'].replace(/"/g, '') === file.etag) || d >= file.lastModified.getTime()) {
+      var lastModified = Math.floor(file.lastModified.getTime() / 1000) * 1000;
+      if ((req.headers['if-none-match'] && req.headers['if-none-match'].replace(/"/g, '') === file.etag) || d >= lastModified) {
         res.statusCode = 304;
         stream = null;
       }

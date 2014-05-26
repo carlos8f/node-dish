@@ -199,7 +199,7 @@ describe('basic test', function () {
       .set('Accept-Encoding', 'deflate')
       .end(function (res) {
         assert.equal(res.statusCode, 200);
-        assert.equal(res.headers['content-length'], 12);
+        assert.equal(res.headers['content-length'], 20);
         // etag should be sha1
         assert.equal(res.headers['etag'], '430ce34d020724ed75a196dfc2ad67c77772d169');
         // last-modified should be set
