@@ -146,7 +146,7 @@ function dish (p, options) {
           file.gzipped.push(data);
           file.gzippedLength += data.length;
         });
-        gzipStream.on('end', end);
+        gzipStream.once('end', end);
         readStream.pipe(gzipStream);
         if (headers['vary'] && !vary.match(/accept\-encoding/i)) headers['vary'] += ', Accept-Encoding';
         else headers['vary'] = 'Accept-Encoding';
@@ -159,7 +159,7 @@ function dish (p, options) {
           file.deflated.push(data);
           file.deflatedLength += data.length;
         });
-        deflateStream.on('end', end);
+        deflateStream.once('end', end);
         readStream.pipe(deflateStream);
         if (headers['vary'] && !headers['vary'].match(/accept\-encoding/i)) headers['vary'] += ', Accept-Encoding';
         else headers['vary'] = 'Accept-Encoding';
@@ -167,18 +167,18 @@ function dish (p, options) {
       // compute etag
       latch++;
       var shaStream = crypto.createHash('sha1');
-      shaStream.on('data', function (data) {
+      shaStream.once('data', function (data) {
         file.etag = data.toString('hex');
       });
-      shaStream.on('end', end);
+      shaStream.once('end', end);
       readStream.pipe(shaStream);
       // record data chunks for replay later
       readStream.on('data', function (data) {
         file.chunks.push(data);
         file.length += data.length;
       });
-      readStream.on('end', end);
-      readStream.on('error', next);
+      readStream.once('end', end);
+      readStream.once('error', next);
 
       function end () {
         if (!--latch) {
