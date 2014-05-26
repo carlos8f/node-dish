@@ -8,19 +8,17 @@ miniature in-memory http static middleware optimized for serving buffers or stri
 Given a file path, string or buffer, **dish** will create you an HTTP server request
 listener, with added benefits:
 
-- gzip support
+- gzip/deflate support
 - ETag / Conditional GET support
-- In-memory cache (faster than accessing the disk for every request)
+- In-memory LRU cache (faster than accessing the disk for every request)
 
-Install
--------
+### Install
 
 ```
 $ npm install --save dish
 ```
 
-Basic usage
------------
+### Basic usage
 
 To serve a raw string or buffer:
 
@@ -38,37 +36,15 @@ To serve a file (mime-type autodetected from file name)
 server.on('request', dish.file('./facepalm.jpg'));
 ```
 
-Options
--------
+### Options
 
 You can pass options as the second parameter to `dish()`.
 
 - `headers` (Object) - override / specify headers to send. Be sure to set a `Content-Type`
   header if you are serving a string or buffer.
-- <del>keepAlive</del>: **This option is removed as of `v0.1.6`**. The intention was to
-  clean up idle connections, but the implementation was shown to
-  [abort active requests](https://github.com/carlos8f/node-buffet/issues/14).
-  Please do not use this option!
-- `maxAge` (Number) - Proxy cache lifetime in seconds. Use this if you are using
-  a reverse proxy such as Varnish.
-- `gzip` (Boolean) - Set to `false` to disable gzip in responses.
+- `status` (Number) - status code for the response, defaults to `res.statusCode` or 200.
 
-### Status code
-
-You can control the status code of the response by passing a Number as the third
-argument of the request handler:
-
-```js
-var handler = dish('page not found');
-server.on('request', function (req, res) {
-  if (req.url === '/nonsense') {
-    handler(req, res, 404); // Status code will be 404
-  }
-});
-```
-
-Example as middleware
----------------------
+### Middleware example
 
 ```js
 var dish = require('dish')
@@ -88,6 +64,21 @@ middler(server)
 
 server.listen(3000);
 ```
+
+### Tweaking the LRU cache
+
+By default, dish uses a 256 MB LRU cache to transparently cache files.
+
+- To clear a single cache entry, use `dish.clearCache(filepath)`.
+- To clear all cache entries, use `dish.clearCache()`.
+- To set cache options, such as `max` bytes, use `dish.cache.setOptions(options)`.
+  Supports options that [lru-cache](https://www.npmjs.org/package/lru-cache) supports.
+- To access the cache directly (an [lru-cache](https://www.npmjs.org/package/lru-cache)
+  instance), use `dish.cache.backend`.
+- To disable the cache, use `dish.cache.setOptions({max: 0})`
+
+```
+
 
 - - -
 
