@@ -95,7 +95,7 @@ function dish (p, options) {
       catch (e) {}
       var lastModified = Math.floor(file.lastModified.getTime() / 1000) * 1000;
       if ((req.headers['if-none-match'] && req.headers['if-none-match'].replace(/"/g, '') === file.etag) || d >= lastModified) {
-        res.statusCode = 304;
+        statusCode = 304;
         stream = null;
       }
       if (req.method === 'HEAD') {
