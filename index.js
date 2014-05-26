@@ -66,7 +66,6 @@ function dish (p, options) {
   var mw = function (req, res, next) {
     var statusCode = 200;
     if (options.status) statusCode = options.status;
-    if (res.statusCode) statusCode = res.statusCode;
     if (typeof next === 'number') {
       statusCode = next;
       next = null;
