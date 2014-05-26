@@ -1,3 +1,19 @@
+assert = require('assert');
+util = require('util');
+http = require('http');
+path = require('path');
+fs = require('fs');
+dish = require('../');
+
+listen = function (fn) {
+  var server = http.createServer();
+  server.listen(0, function () {
+    fn(server, server.address().port);
+  });
+};
+
+request = require('superagent');
+
 describe('basic test', function () {
   var server, baseUrl;
   before(function (done) {
@@ -63,7 +79,7 @@ describe('basic test', function () {
       .set('Accept-Encoding', 'deflate')
       .end(function (res) {
         assert.equal(res.statusCode, 200);
-        assert.equal(res.headers['content-length'], 12);
+        assert.equal(res.headers['content-length'], 20);
         // etag should be sha1
         assert.equal(res.headers['etag'], '430ce34d020724ed75a196dfc2ad67c77772d169');
         // last-modified should be set
@@ -85,13 +101,7 @@ describe('basic test', function () {
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 15673);
         // etag should be sha1
-        if (fs.exists) {
-          assert.equal(res.headers['etag'], 'ac82f5998d5a621eda3feb8837b2bdd0421be590');
-        }
-        else {
-          // node 0.6 is weird.
-          assert.equal(res.headers['etag'], '5633b5aa1a8485e58c4ad0cf6ffbac6ae8ec81ef');
-        }
+        assert.equal(res.headers['etag'], 'c01b3f9f12197efbde09ae7870fb39d092a6f6f9');
         // last-modified should be set
         assert(res.headers['last-modified']);
         // content-type should be text/plain
@@ -117,13 +127,7 @@ describe('basic test', function () {
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 15673);
         // etag should be sha1
-        if (fs.exists) {
-          assert.equal(res.headers['etag'], 'ac82f5998d5a621eda3feb8837b2bdd0421be590');
-        }
-        else {
-          // node 0.6 is weird.
-          assert.equal(res.headers['etag'], '5633b5aa1a8485e58c4ad0cf6ffbac6ae8ec81ef');
-        }
+        assert.equal(res.headers['etag'], 'c01b3f9f12197efbde09ae7870fb39d092a6f6f9');
         // last-modified should be set
         assert(res.headers['last-modified']);
         // content-type should be text/plain
