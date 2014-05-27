@@ -1,6 +1,6 @@
 {
   "name": "dish",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "miniature in-memory http cache optimized for serving buffers or strings",
   "main": "index.js",
   "dependencies": {
