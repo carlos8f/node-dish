@@ -155,7 +155,7 @@ function dish (p, options) {
         });
         gzipStream.once('end', end);
         readStream.pipe(gzipStream);
-        if (headers['vary'] && !vary.match(/accept\-encoding/i)) headers['vary'] += ', Accept-Encoding';
+        if (headers['vary'] && !headers['vary'].match(/accept\-encoding/i)) headers['vary'] += ', Accept-Encoding';
         else headers['vary'] = 'Accept-Encoding';
       }
       // possibly deflate
