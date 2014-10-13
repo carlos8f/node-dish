@@ -209,7 +209,7 @@ dish.clearCache = function (p) {
   if (p) {
     // delete items in subdirectories
     cache.backend.keys().forEach(function (k) {
-      if (minimatch(k, '{' + p + ',' + p.replace(/\/$/, '') + '/**/*}')) {
+      if (typeof k === 'string' && minimatch(k, '{' + p + ',' + p.replace(/\/$/, '') + '/**/*}')) {
         cache.backend.del(k);
       }
     });
