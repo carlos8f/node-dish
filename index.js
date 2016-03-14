@@ -61,6 +61,7 @@ function dish (p, options) {
   if (Buffer.isBuffer(p)) buffered = [p];
   else if (Array.isArray(p)) buffered = p;
   else if (!options.file) buffered = [Buffer(p)];
+  var buffered_file;
 
   // middleware handler
   var mw = function (req, res, next) {
@@ -72,7 +73,7 @@ function dish (p, options) {
     }
     if (!next) next = function (e) { res.emit('error', e) };
     // try fetching from the LRU cache
-    var file = cache.backend.get(p);
+    var file = options.file ? cache.backend.get(p) : buffered_file;
     // cache hit
     if (file) {
       var stream;
@@ -189,7 +190,8 @@ function dish (p, options) {
 
       function end () {
         if (!--latch) {
-          cache.backend.set(p, file);
+          if (options.file) cache.backend.set(p, file);
+          else buffered_file = file;
           res.emit('cached');
         }
       }
