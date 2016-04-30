@@ -29,7 +29,8 @@ describe('basic test', function () {
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert.ifError(err);
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 8);
         // etag should be sha1
@@ -55,7 +56,8 @@ describe('basic test', function () {
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert.ifError(err);
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 29);
         // etag should be sha1
@@ -77,7 +79,8 @@ describe('basic test', function () {
       .set('If-Modified-Since', 'Fri, 18 Jan 2013 20:50:19 GMT')
       .set('If-None-Match', 'c01b3f9f12197efbde09ae7870fb39d092a6f6f9')
       .set('Accept-Encoding', 'deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert.ifError(err);
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 20);
         // etag should be sha1
@@ -97,7 +100,8 @@ describe('basic test', function () {
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'gzip, deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert.ifError(err);
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 15673);
         // etag should be sha1
@@ -107,14 +111,8 @@ describe('basic test', function () {
         // content-type should be text/plain
         assert.equal(res.headers['content-type'], 'image/png');
         // proper content
-        var data = '';
-        res.on('data', function (chunk) {
-          data += chunk;
-        });
-        res.once('end', function () {
-          assert.equal(fs.readFileSync('pirate_flag.png').toString(), data);
-          done();
-        });
+        assert.deepEqual(res.body, fs.readFileSync('pirate_flag.png'))
+        done();
       });
   });
 
@@ -123,7 +121,8 @@ describe('basic test', function () {
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'gzip, deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert.ifError(err);
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 15673);
         // etag should be sha1
@@ -133,14 +132,8 @@ describe('basic test', function () {
         // content-type should be text/plain
         assert.equal(res.headers['content-type'], 'image/png');
         // proper content
-        var data = '';
-        res.on('data', function (chunk) {
-          data += chunk;
-        });
-        res.once('end', function () {
-          assert.equal(fs.readFileSync('pirate_flag.png').toString(), data);
-          done();
-        });
+        assert.deepEqual(res.body, fs.readFileSync('pirate_flag.png'));
+        done();
       });
   });
 
@@ -151,7 +144,8 @@ describe('basic test', function () {
     request
       .get(baseUrl + '/')
       .set('Accept-Encoding', 'gzip, deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert.ifError(err);
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 32);
         // etag should be sha1
@@ -173,7 +167,9 @@ describe('basic test', function () {
       .get(baseUrl + '/')
       .set('If-None-Match', eTag)
       .set('Accept-Encoding', 'deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert(err);
+        assert.equal(err.status, 304);
         assert.equal(res.statusCode, 304);
         assert(!res.text);
         done();
@@ -184,7 +180,9 @@ describe('basic test', function () {
     request
       .get(baseUrl + '/')
       .set('If-Modified-Since', lastModified)
-      .end(function (res) {
+      .end(function (err, res) {
+        assert(err);
+        assert.equal(err.status, 304);
         assert.equal(res.statusCode, 304);
         assert(!res.text);
         done();
@@ -197,7 +195,8 @@ describe('basic test', function () {
       .set('If-Modified-Since', 'Fri, 18 Jan 2013 20:50:19 GMT')
       .set('If-None-Match', 'c01b3f9f12197efbde09ae7870fb39d092a6f6f9')
       .set('Accept-Encoding', 'deflate')
-      .end(function (res) {
+      .end(function (err, res) {
+        assert.ifError(err);
         assert.equal(res.statusCode, 200);
         assert.equal(res.headers['content-length'], 20);
         // etag should be sha1
